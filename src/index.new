@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css"/>
+    <script>
+//        var init = function() {
+//            var interval = window.setInterval(function(){
+//                if(window.checkAuth){
+//                    window.checkAuth();
+//                    window.clearInterval(interval);
+//                }
+//            }, 2000);
+//        };
+        //window.action = "list";
+    </script>
+    <script src="vendors.js"></script>
+    <script src="app.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
+</head>
+<body ng-app="routastic" ng-cloak class="container">
+<h1>DRRrrRrvrr</h1>
+<nav>
+    <ul class="nav nav-tabs" role="tablist" ng-controller="TabController as tc">
+        <li role="presentation" ng-class="{active:tc.active('list')}"><a href="#list" aria-controls="list" role="tab" data-toggle="tab">Doc List</a></li>
+        <li role="presentation" ng-class="{active:tc.active('add')}"><a href="#add" aria-controls="add user" role="tab" data-toggle="tab">Doc Viewer</a></li>
+    </ul>
+</nav>
+<div ng-view class="well"></div>
+
+</body>
+</html>
