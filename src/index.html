@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <link rel="stylesheet" href="styles.css"/>
     <script>
-    var init = function() {
-      var interval = window.setInterval(function(){
-        if(window.checkAuth){
-          window.checkAuth();
-          window.clearInterval(interval);
-        }
-      }, 2000);
-    };
-    window.action = "list";
+//        var init = function() {
+//            var interval = window.setInterval(function(){
+//                if(window.checkAuth){
+//                    window.checkAuth();
+//                    window.clearInterval(interval);
+//                }
+//            }, 2000);
+//        };
+        //window.action = "list";
     </script>
     <script src="vendors.js"></script>
     <script src="app.js"></script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
-  </head>
-  <body class="container">
-    <h1>Hello Google DRRrrRrvrr!</h1>
-    <div id="authorize-div">
-      <span>Authorize access to Drive API</span>
-      <!--Button for the user to click to initiate auth sequence -->
-        <!-- 1048872932033-l0jitd54odppd6c896djjq2e1lrer8qg.apps.googleusercontent.com -->
-        <!-- VHTpw1Hsrnl_psVeha1OlgPT -->
-      <button id="authorize-btn">
-        Authorize
-      </button>
-    </div>
+</head>
+<body ng-app="routastic" ng-cloak class="container">
+<h1>DRRrrRrvrr</h1>
+<nav>
+    <ul class="nav nav-tabs" role="tablist" ng-controller="TabController as tc">
+        <li role="presentation" ng-class="{active:tc.active('list')}"><a href="#list" aria-controls="list" role="tab" data-toggle="tab">Doc List</a></li>
+        <li role="presentation" ng-class="{active:tc.active('add')}"><a href="#add" aria-controls="add user" role="tab" data-toggle="tab">Doc Viewer</a></li>
+    </ul>
+</nav>
+<div ng-view class="well"></div>
 
-    <div id="output" class="well">
-      <ul></ul>
-    </div>
-
-  </body>
+</body>
 </html>

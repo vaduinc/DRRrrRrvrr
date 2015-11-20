@@ -1,124 +1,63 @@
-$(document).ready(function(){
-  var action;
-  if(window.action == 'list'){
-    action = listFiles;
-  } else if(window.action = 'doc'){
-    action = displayFile;
-  }
+var app = angular.module('routastic', ['ngRoute']);
 
-  /**
-   * Check if current user has authorized this application.
-   */
-  window.checkAuth = function() {
-    gapi.auth.authorize(
-      {
-        'client_id': CLIENT_ID,
-        'scope': SCOPES.join(' '),
-        'immediate': false
-      }, handleAuthResult);
+app.controller('TabController', ['$location', function($location){
+  var tc = this;
+  tc.active = function(path){
+    return !!$location.path().match(path);
   };
+}]);
 
-  /**
-   * Handle response from authorization server.
-   *
-   * @param {Object} authResult Authorization result.
-   */
-  function handleAuthResult(authResult) {
-    var authorizeDiv = document.getElementById('authorize-div');
-    if (authResult && !authResult.error) {
-      // Hide auth UI, then load client library.
-      authorizeDiv.style.display = 'none';
-      loadDriveApi();
-    } else {
-      // Show auth UI, allowing the user to initiate authorization by
-      // clicking authorize button.
-      authorizeDiv.style.display = 'inline';
-    }
-  }
+app.controller('ListController', ['Names', '$scope', function(Names, $scope){
+  var vm = this;
+  vm.names = Names;
+  Names.get();
+}]);
 
-  /**
-   * Initiate auth flow in response to user clicking authorize button.
-   *
-   * @param {Event} event Button click event.
-   */
-  function handleAuthClick(event) {
-    gapi.auth.authorize(
-      {client_id: CLIENT_ID, scope: SCOPES, immediate: false},
-      handleAuthResult);
-    return false;
-  }
+app.controller('AddController', ['Names', '$location', '$scope', function(Names, $location, $scope){
+  var vm = this;
+  vm.addName = function(){
+    Names.push(vm.name);
+    $location.path('/list');
+  };
+}]);
 
-  /**
-   * Load Drive API client library.
-   */
-  function loadDriveApi() {
-    gapi.client.load('drive', 'v2', action);
-  }
+app.value('Names2', [
+  "Andrew",
+  "Norman",
+  "Lauren",
+  "Danai"
+]);
 
-  /**
-   * Print files.
-   */
-  function listFiles() {
-    var request = gapi.client.drive.files.list({
-        'maxResults': 10,
-        'q': "mimeType = 'application/vnd.google-apps.document'"
-      });
-
-      request.execute(function(resp) {
-        var files = resp.items;
-        if (files && files.length > 0) {
-          for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            appendLink(file.id, file.title);
-          }
-        } else {
-          appendLink('', 'No files found.');
-        }
-      });
-  }
-
-  function displayFile() {
-    fileId = window.location.hash.substring(1);
-    var request = gapi.client.drive.files.get({fileId: fileId});
-
-    request.execute(function(resp) {
-      var accessToken = gapi.auth.getToken().access_token;
-
-      $.ajax({
-        url: resp.exportLinks["text/plain"],
-        type: "GET",
-        beforeSend: function(xhr){
-          xhr.setRequestHeader('Authorization', "Bearer "+accessToken);
-        },
-        success: function( data ) {
-          $('#output').html(data.replace(/\n/g, "<br>"));
-        }
-      });
-
+app.service('Names', ['$http', function($http){
+  var names = this;
+  names.get = function(callback){
+    $http.get('/names.json', {}).then(function(response){
+      names.list = response.data;
+      console.log(response);
+      console.log(response.data);
+      if(callback){
+        callback();        
+      }
+    }, function(response){
+      console.log(response);
     });
-  }
+  };
+  names.list = [];
+}]);
 
-  /**
-   * Append a link element to the body containing the given text
-   * and a link to the /doc page.
-   *
-   * @param {string} id Id to be used in the link's href attribute.
-   * @param {string} text Text to be placed in a element.
-   */
-  function appendLink(id, text){
-    if(id != ''){
-      var li = $('<li></li>');
-      var link = $('<a></a>');
-      link.attr('href', '/doc.html#'+id);
-      link.html(text);
-      li.append(link);
-      $('#output ul').append(li);
-    } else {
-      $('#output').append(text);
-    }
-  }
-
-  $('#authorize-btn').click(handleAuthClick);
-
-
-});
+app.config(['$routeProvider', function($routeProvider){
+  $routeProvider
+    .when('/list', {
+      templateUrl: 'templates/list.html',
+      controller: 'ListController',
+      controllerAs: 'vm'
+    })
+    .when('/add', {
+      templateUrl: 'templates/add.html',
+      controller: 'AddController',
+      controllerAs: 'vm'
+    })
+    .otherwise({
+      redirectTo: '/list'
+    });
+}]);
