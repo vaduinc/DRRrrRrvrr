@@ -11,7 +11,7 @@ var connect = require('gulp-connect');
 gulp.task('buildApp', function(){
   return gulp.src(['src/js/config.js', 'src/js/**/*.js'])
     .pipe(concat('app.js'))
-    //.pipe(uglify())
+    .pipe(uglify())
     .pipe(gulp.dest('dist'))
     .pipe(connect.reload());
 });
@@ -36,7 +36,7 @@ gulp.task('buildCSS', function(){
 });
 
 gulp.task('moveHTML', function(){
-  return gulp.src('src/**/*.html')
+  return gulp.src(['src/**/*.html', 'src/**/*.json'])
     .pipe(gulp.dest('dist'))
     .pipe(connect.reload());
 });
