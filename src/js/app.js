@@ -31,7 +31,6 @@ app.service('googleApis' , ['$q','$http',function($q,$http){
 
         return getAuthResult.promise;
 
-        console.log('sali service');
     };
 
     gasrv.getList= function(){
@@ -61,33 +60,45 @@ app.service('googleApis' , ['$q','$http',function($q,$http){
        // return gasrv.docs;
     };
 
-    gasrv.getDocument = function(docId){
+    gasrv.getDocument = function(docId,callback){
 
         var getDocPromise = $q.defer();
 
-        gapi.client.load('drive', 'v2', function(){
-            getDocPromise.resolve(docId);
-        });
+        gapi.client.load('drive', 'v2',
+            function(){
+                getDocPromise.resolve({"docid":docId,"callfunction":callback});
+            });
 
-        getDocPromise.promise.then(function(docId){
-            fileId = docId;
+        getDocPromise.promise.then(function(params){
+            fileId = params.docid;
+            callback = params.callfunction;
             var request = gapi.client.drive.files.get({fileId: fileId});
-           // console.log ("IDSSSS  " + fileId);
 
             request.execute(function(resp) {
+
                 var accessToken = gapi.auth.getToken().access_token;
                 var config = {headers:{'Authorization': "Bearer "+accessToken}};
 
-                console.log ("accessToken  " + accessToken);
-
                 $http.get(resp.exportLinks["text/plain"], config)
                     .then(function(respData){
-                        console.log ("respData  " + respData.data);
-                        //gasrv.currentDoc = respData.data.replace(/\n/g, "<br>");
-                        gasrv.currentDoc = respData.data;
+                        if (callback){
+                            callback(respData.data);
+                        }else{
+                            gasrv.currentDoc = respData.data;
+                        }
+
                     });
             });
         });
+    };
+
+    gasrv.translate2zombie = function(sourceTxt){
+
+        $http.get("http://ancient-anchorage-9224.herokuapp.com/zombify?q=" + encodeURIComponent(sourceTxt))
+            .then(function(respData){
+                gasrv.currentDoc = respData.data.message;
+            });
+
     };
 
 }]);
@@ -98,7 +109,6 @@ app.directive('googleList' ,['googleApis' ,  function(googleApis){
         var gl = this;
 
         gl.getList = function(){
-            console.log(' directive List ' + googleApis.docs);
 
             if (googleApis.docs.length<=0) {
                 googleApis.getList();
@@ -109,15 +119,7 @@ app.directive('googleList' ,['googleApis' ,  function(googleApis){
 
 
         gl.fetchDocument  = function(id){
-            console.log("ID googleList googleList googleList googleList=> " + id);
-            googleApis.getDocument(id);
-
-           // var elem2 = angular.element( document.querySelector( 'a[href="#list"]' ) );
-            //angular.element('a[href="#docviewer"]').tab('show'); // Select tab by name
-            //angular.element('a[href="#list"]').tab('hide'); // Select tab by name
-            //console.log("elem2  "  + elem2);
-           // elem2.tab('hide');
-
+            googleApis.getDocument(id,googleApis.translate2zombie);
 
             return googleApis.currentDoc;
         };
@@ -136,18 +138,10 @@ app.directive('googleDoc' ,['googleApis' ,  function(googleApis){
         var gd = this;
 
         gd.displayDoc  = function(idSelector){
-            console.log("gd.displayDoc ");
-
-            //var elem2 = angular.element( document.querySelector( 'a[href="#docviewer"]' ) );
-            //angular.element('a[href="#docviewer"]').tab('show'); // Select tab by name
-            //console.log("elem2  "  + elem2);
-            //elem2.tab('show');
+            //console.log("gd.displayDoc ");
 
             var elem = angular.element( document.querySelector( idSelector ) );
             elem.html(googleApis.currentDoc.replace(/\n/g, "<br>"));
-
-            //gd.switchTab('a[href=#docviewer]','show')
-            //googleApis.currentDoc.replace(/\n/g, "<br>");
         };
 
 
