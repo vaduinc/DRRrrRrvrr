@@ -1,3 +1,3 @@
-<button ng-if="!ga.getAutorization()">
-    Authorize
+<button ng-if="!ga.isAutoReady()" ng-click="ga.getPopup()" >
+   Click to Authorize
 </button>

@@ -1,3 +1,5 @@
+var isInitReady = false;
+
 var app = angular.module('routastic', ['ngRoute']);
 
 //app.controller('TabController', ['$location', function($location){
@@ -11,53 +13,81 @@ var app = angular.module('routastic', ['ngRoute']);
 app.service('googleApis' , ['$q','$http',function($q,$http){
     var gasrv = this;
 
-    gasrv.activated = false;
     gasrv.docs=[];
     gasrv.currentDoc="N/A";
+    gasrv.autoChecking=false;
+    activado = false;
 
-    gasrv.authorization = function(){
-        console.log('Entre service');
 
-        var getAuthResult = $q.defer();
-
-        gapi.auth.authorize(
-            {
-                'client_id': CLIENT_ID,
-                'scope': SCOPES.join(' '),
-                'immediate': false
-            }, function(authResult){
-                getAuthResult.resolve(authResult);
-            });
-
-        return getAuthResult.promise;
-
+    gasrv.setActivado = function(newValue) {
+        activado = newValue;
     };
 
-    gasrv.getList= function(){
+    gasrv.getActivado = function() {
+        return activado;
+    };
 
-        var getDocCollection = $q.defer();
+    gasrv.authorization = function(popupLogin){
+        var getAuthResult = $q.defer();
 
-        gapi.client.load('drive', 'v2', function(){
-            getDocCollection.resolve();
-        });
+        if (!gasrv.autoChecking) {
+            gasrv.autoChecking=true;
+            gapi.auth.authorize(
+                {
+                    'client_id': CLIENT_ID,
+                    'scope': SCOPES.join(' '),
+                    'immediate': popupLogin
+                }, function (authResult) {
+                    if (authResult && !authResult.error) {
+                        getAuthResult.resolve(authResult);
+                    }else{
+                        getAuthResult.reject(authResult);
+                    }
+                });
 
-        getDocCollection.promise.then(function(){
+            return getAuthResult.authorization;
+        }
+    };
 
-            var request = gapi.client.drive.files.list({
-                'maxResults': 10,
-                'q': "mimeType = 'application/vnd.google-apps.document'"
-            });
+    gasrv.getList= function(mycallback){
 
-            request.execute(function(resp) {
-                console.log("CAllback with list response");
-                gasrv.docs =  resp.items;
-            });
+        //var getDocCollection = $q.defer();
+        //
+        //gapi.client.load('drive', 'v2', function(){
+        //    getDocCollection.resolve();
+        //});
 
-        });
+        var getDocCollection = gapi.client.load('drive', 'v2');
 
+        getDocCollection.then(function(){
 
-        console.log("ya me devolvi !!!");
-       // return gasrv.docs;
+                console.log("TRYING TO LOAD LIST!!!");
+
+                gapi.client.drive.files.list({
+                    'maxResults': 10,
+                    'q': "mimeType = 'application/vnd.google-apps.document'"
+                }).then(function(resp) {
+                        console.log("RETRIEVE successfully the list!!! ");
+                        //console.log(resp.result.items);
+                        gasrv.docs =  resp.result.items;
+                        mycallback(gasrv.docs);
+                    },function(){
+                        console.log("Failed getting the list");
+                        //gasrv.activado = false;
+                        gasrv.docs = [];
+                    }
+                );
+
+                //request.execute(function(resp) {
+                //    gasrv.docs =  resp.items;
+                //});
+
+            }, function(){
+                //gasrv.activado = false;
+                console.log("COULDN'T LOAD CLIENT INTERFACE");
+            }
+        );
+
     };
 
     gasrv.getDocument = function(docId,callback){
@@ -101,17 +131,28 @@ app.service('googleApis' , ['$q','$http',function($q,$http){
 
     };
 
+
+    gasrv.isThereAToken = function(){
+        return gapi.auth.getToken();
+    };
+
 }]);
 
-app.directive('googleList' ,['googleApis' ,  function(googleApis){
+app.directive('googleList' ,['googleApis' , '$window', function(googleApis,$window){
 
     this.ctrl = function(){
         var gl = this;
 
+        gl.docCollection = [];
+
         gl.getList = function(){
 
-            if (googleApis.docs.length<=0) {
-                googleApis.getList();
+            //console.log("googleApis.docs " + googleApis.docs);
+            if (!googleApis.docs || googleApis.docs.length<=0) {
+                googleApis.getList(function(mycole){
+                    //console.log(mycole);
+                    gl.docCollection = mycole;
+                });
             }
 
             return googleApis.docs;
@@ -123,6 +164,12 @@ app.directive('googleList' ,['googleApis' ,  function(googleApis){
 
             return googleApis.currentDoc;
         };
+
+
+        gl.checkIfInitReady = function(){
+            return $window.isInitReady;
+        }
+
     };
 
     return {
@@ -164,28 +211,73 @@ app.directive('googleDoc' ,['googleApis' ,  function(googleApis){
     };
 }]);
 
-app.directive('googleAuto' ,['googleApis' ,  function(googleApis){
+
+app.directive('googleAuto' ,['googleApis' , '$rootScope' ,'ISActivo', '$window', function(googleApis,$rootScope,ISActivo,$window){
 
     this.ctrl = function(){
         var ga = this;
 
-        ga.getAutorization = function(){
-            console.log(' directive Entre');
+        ga.isReady=false;
 
-            if (googleApis.activated){
-                return googleApis.activated;
-            }else {
-               googleApis.authorization().then(function (aresult) {
-                    console.log('directive sali');
-                    if (aresult && !aresult.error) {
-                        googleApis.activated = true;
-                    } else {
-                        googleApis.activated = false;
-                    }
-                });
+        ga.getAutorization = function(avoidPopup){
+
+            console.log("here is the value of isReady " +  ISActivo);//  googleApis.getActivado());
+
+            //if (!googleApis.getActivado()){
+            if (!ga.isReady){
+
+                //ga.isReady =  googleApis.activado;
+
+                var autoPromise = googleApis.authorization(avoidPopup)
+
+                if (autoPromise) {
+                    autoPromise.then(function (aresult) {
+                        console.log("Success Login!");
+                        ISActivo = true;
+                        googleApis.setActivado(true);
+                        ga.isReady = true;
+                        googleApis.autoChecking = false;
+                        //$rootScope.$apply();
+                    }, function (aresult) {
+                        console.log("Something failed when trying to login " + aresult.error());
+                        googleApis.setActivado(false);
+                        ISActivo = false;
+                        ga.isReady = false;
+                        googleApis.autoChecking = false;
+                    });
+                }
+                else{
+                    //console.log("DID NOT WANT TO LOG IN???");
+                    //googleApis.activado = false;
+                    //ga.isReady = false;
+                    googleApis.autoChecking = false;
+                }
+
+               //$rootScope.$apply();
             }
         };
 
+
+        ga.checkIfInitReady = function(){
+            return $window.isInitReady;
+        }
+
+        ga.isAutoReady = function(){
+            console.log("checkiando ... " + ga.isReady);
+
+            //return googleApis.getActivado();
+            //return ISActivo;
+
+            if (ga.checkIfInitReady() && googleApis.isThereAToken()){
+                ga.isReady = true;
+            }
+
+            return ga.isReady;
+        }
+
+        ga.getPopup = function(){
+            ga.getAutorization(false);
+        };
     };
 
     return {
@@ -194,6 +286,9 @@ app.directive('googleAuto' ,['googleApis' ,  function(googleApis){
         templateUrl: 'templates/google-auto.html'
     };
 }]);
+
+
+app.value('ISActivo',false);
 
 
 app.config(['$routeProvider', function($routeProvider){
