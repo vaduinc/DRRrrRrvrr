@@ -12,20 +12,23 @@
     <script src="app.js"></script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
 </head>
-<body ng-app="routastic" ng-cloak class="container">
-<h1>DRRrrRrvrr =>  <google-auto></google-auto></h1>
-<nav>
-    <!--<ul class="nav nav-tabs" role="tablist" ng-controller="TabController as tc">-->
-    <ul class="nav nav-tabs" role="tablist">
-        <!--<li role="presentation" ng-class="{active:tc.active('list')}"><a href="#list" aria-controls="list" role="tab" data-toggle="tab">Doc List</a></li>
-        <li role="presentation" ng-class="{active:tc.active('docviewer')}"><a href="#docviewer" aria-controls="doc viewer" role="tab" data-toggle="tab">Doc Viewer</a></li>
--->
-        <li role="presentation" ><a href="#list" aria-controls="list" role="tab" data-toggle="tab">Doc List</a></li>
-        <li role="presentation" ><a href="#docviewer" aria-controls="doc viewer" role="tab" data-toggle="tab">Doc Viewer</a></li>
+<body ng-app="DRRrrRrvrr" ng-cloak class="container">
 
-    </ul>
-</nav>
-<div ng-view class="well"></div>
+    <h1>DRRrrRrvrr =>  <google-auto></google-auto></h1>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a ng-href="#/controller">Document List</a></li>
+                    <li><a ng-href="#/directive">Document Viewer</a></li>
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <div ng-view class="well"></div>
 
 </body>
 </html>

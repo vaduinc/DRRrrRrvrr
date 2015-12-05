@@ -1,0 +1,6 @@
+<div ng-if="post">
+  <strong>{{ post.title }}</strong><br>
+  <div ng-if="body">
+      <p ng-bind-html="post"></p>
+  </div>
+</div>
