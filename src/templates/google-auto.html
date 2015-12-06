@@ -1,3 +1,4 @@
-<button ng-if="!ga.isAutoReady()" ng-click="ga.getPopup()" >
+<!--ng-if="!ga.isAutoReady()"-->
+<button ng-if="!ga.gAPI.isConnected" ng-click="ga.getPopup()" >
    Click to Authorize
 </button>

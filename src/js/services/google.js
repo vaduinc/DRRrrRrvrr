@@ -3,35 +3,48 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
 
     gasrv.docs=[];
     gasrv.currentDoc="N/A";
-    gasrv.autoChecking=false;
+   // gasrv.autoChecking=false;
 
     gasrv.authorization = function(popupLogin){
         var getAuthResult = $q.defer();
 
-        if (!gasrv.autoChecking) {
-            gasrv.autoChecking=true;
-            gapi.auth.authorize(
-                {
-                    'client_id': CLIENT_ID,
-                    'scope': SCOPES.join(' '),
-                    'immediate': popupLogin
-                }, function (authResult) {
-                    if (authResult && !authResult.error) {
-                        getAuthResult.resolve(authResult);
-                    }else{
-                        getAuthResult.reject(authResult);
-                    }
-                });
+        //if (!gasrv.autoChecking) {
+        //    gasrv.autoChecking=true;
+        //
+        gapi.auth.authorize(
+            {
+                'client_id': CLIENT_ID,
+                'scope': SCOPES.join(' '),
+                'immediate': popupLogin
+            }, function (authResult) {
+                if (authResult && !authResult.error) {
+                    getAuthResult.resolve(authResult);
+                }else{
+                    getAuthResult.reject(authResult);
+                }
+            });
 
-            return getAuthResult.authorization;
-        }
+        return getAuthResult.promise;
+
+        //getAuthResult.promise.then(function (aresult) {
+        //    console.log("Success Login!");
+        //    alert("Success Login!");
+        //    gasrv.isConnected=true;
+        //    //ga.isReady = true;
+        //    //googleApis.autoChecking = false;
+        //    //$rootScope.$apply();
+        //}, function (aresult) {
+        //    console.log("Something failed when trying to login " + aresult.error());
+        //    gasrv.isConnected=false;
+        //    //ga.isReady = false;
+        //    //googleApis.autoChecking = false;
+        //});
+
+       // }
     };
 
     gasrv.getList= function(mycallback){
 
-        //var getDocCollection;
-        //
-        //if (gapi.client){
             var getDocCollection = gapi.client.load('drive', 'v2');
 
             getDocCollection.then(function(){
@@ -62,7 +75,6 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
                     console.log("COULDN'T LOAD CLIENT INTERFACE");
                 }
             );
-        //}
 
     };
 
