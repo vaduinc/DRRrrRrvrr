@@ -11,11 +11,11 @@ var app = angular.module('DRRrrRrvrr', ['ngRoute','ngSanitize']);
 
 app.config(['$routeProvider', function($routeProvider){
   $routeProvider
-    .when('/controller', {
-          templateUrl: 'templates/controller.html'
+    .when('/documentlist', {
+          templateUrl: 'templates/documentlist.html'
     })
-    .when('/directive', {
-          templateUrl: 'templates/directive.html'
+    .when('/documentviewer', {
+          templateUrl: 'templates/documentviewer.html'
     })
     .otherwise({
       redirectTo: '/'
