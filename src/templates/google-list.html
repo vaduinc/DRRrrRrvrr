@@ -1,5 +1,5 @@
-<ul>
-    <!--ng-class="{'active-post':dl.posts.isActive(post.id)}"-->
+<ul class="well display">
+   <!--ng-class="{'active-post':dl.posts.isActive(post.id)}"-->
   <li ng-repeat="(index, doc) in dl.documentos.docs" >
     <a class="unlink" ng-click="dl.display(doc)">
       <google-doc post="doc"></google-doc>

@@ -1,4 +1,7 @@
-<!--ng-if="!ga.isAutoReady()"-->
-<button ng-if="!ga.gAPI.isConnected" ng-click="ga.getPopup()" >
-   Click to Authorize
-</button>
+<h3 class="alert alert-info" ng-if="!ga.gAPI.isConnected" >
+    <button  ng-click="ga.getPopup()" >Click to Authorize</button>
+    Click button to login or regain google token
+</h3>
+<h4 class="alert alert-info" ng-if="ga.gAPI.isConnected" >
+    Click 'Document List' to see available documents, then click on one of the documents. You will see the zombified version on the same tab, click on 'Document Viewer' to see original the document.
+</h4>

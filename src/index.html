@@ -12,23 +12,22 @@
     <script src="app.js"></script>
     <script src="https://apis.google.com/js/client.js?onload=init"></script>
 </head>
-<body ng-app="DRRrrRrvrr" ng-cloak class="container">
+    <body ng-app="DRRrrRrvrr" ng-cloak class="container">
 
-    <h1>DRRrrRrvrr =>  <google-auto></google-auto></h1>
+        <h1>DRRrrRrvrr </h1>
+        <google-auto></google-auto>
 
-    <nav class="navbar navbar-default">
         <div class="container-fluid">
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a ng-href="#/documentlist">Document List</a></li>
-                    <li><a ng-href="#/documentviewer">Document Viewer</a></li>
+                <ul class="nav navbar-nav" role="tablist" >
+                    <li role="presentation" ><a ng-href="#/documentlist" >Document List</a></li>
+                    <li role="presentation" ><a ng-href="#/documentviewer">Document Viewer</a></li>
                 </ul>
-            </div><!-- /.navbar-collapse -->
-        </div><!-- /.container-fluid -->
-    </nav>
+            </div>
+        </div>
 
-    <div ng-view class="well"></div>
+        <div ng-view class="well"></div>
 
-</body>
+    </body>
 </html>

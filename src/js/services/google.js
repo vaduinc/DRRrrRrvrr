@@ -1,20 +1,18 @@
-app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootScope){
+app.service('googleApis' , ['$q','$http', 'appConfig',function($q,$http,appConfig){
     var gasrv = this;
 
     gasrv.docs=[];
     gasrv.currentDoc="N/A";
-   // gasrv.autoChecking=false;
+    gasrv.originalDoc="N/A";
+    gasrv.isConnected = false;
 
     gasrv.authorization = function(popupLogin){
         var getAuthResult = $q.defer();
 
-        //if (!gasrv.autoChecking) {
-        //    gasrv.autoChecking=true;
-        //
         gapi.auth.authorize(
             {
-                'client_id': CLIENT_ID,
-                'scope': SCOPES.join(' '),
+                'client_id':  appConfig.CLIENT_ID,
+                'scope': appConfig.SCOPES.join(' '),
                 'immediate': popupLogin
             }, function (authResult) {
                 if (authResult && !authResult.error) {
@@ -26,21 +24,6 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
 
         return getAuthResult.promise;
 
-        //getAuthResult.promise.then(function (aresult) {
-        //    console.log("Success Login!");
-        //    alert("Success Login!");
-        //    gasrv.isConnected=true;
-        //    //ga.isReady = true;
-        //    //googleApis.autoChecking = false;
-        //    //$rootScope.$apply();
-        //}, function (aresult) {
-        //    console.log("Something failed when trying to login " + aresult.error());
-        //    gasrv.isConnected=false;
-        //    //ga.isReady = false;
-        //    //googleApis.autoChecking = false;
-        //});
-
-       // }
     };
 
     gasrv.getList= function(mycallback){
@@ -49,29 +32,22 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
 
             getDocCollection.then(function(){
 
-                    console.log("TRYING TO LOAD LIST!!!");
-
                     gapi.client.drive.files.list({
                         'maxResults': 10,
                         'q': "mimeType = 'application/vnd.google-apps.document'"
                     }).then(function(resp) {
-                            console.log("RETRIEVE successfully the list!!! ");
-                            //console.log(resp.result.items);
                             gasrv.docs =  resp.result.items;
                             if(mycallback) {
                                 mycallback(gasrv.docs);
                             }
-                            $rootScope.$apply;
                         },function(){
                             console.log("Failed getting the list");
-                            //gasrv.activado = false;
                             gasrv.docs = [];
                         }
                     );
 
 
                 }, function(){
-                    //gasrv.activado = false;
                     console.log("COULDN'T LOAD CLIENT INTERFACE");
                 }
             );
@@ -102,9 +78,9 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
                         if (callback){
                             callback(respData.data);
                         }else{
-                            gasrv.currentDoc = respData.data;
+                            gasrv.currentDoc = respData.data.replace(/\n/g, "<br>"); // TODO should not replace here;
                         }
-
+                        gasrv.originalDoc = respData.data.replace(/\n/g, "<br>"); // TODO should not replace here;
                     });
             });
         });
@@ -112,17 +88,11 @@ app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootSc
 
     gasrv.translate2zombie = function(sourceTxt){
 
-        $http.get("http://ancient-anchorage-9224.herokuapp.com/zombify?q=" + encodeURIComponent(sourceTxt))
+        $http.get(appConfig.ZOMBIE_URL + encodeURIComponent(sourceTxt))
             .then(function(respData){
                 gasrv.currentDoc = respData.data.message.replace(/\n/g, "<br>"); // TODO should not replace here
-                //gasrv.currentDoc = respData.data.message;
             });
 
-    };
-
-
-    gasrv.isThereAToken = function(){
-        return gapi.auth.getToken();
     };
 
 }]);

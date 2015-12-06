@@ -1,11 +1,16 @@
-<div class="row">
-
-    <google-list class="well col-md-4"></google-list>
-
-    <div class="col-md-8" ng-controller="DisplayController as dc">
-        <div class="well display">
-            <google-doc post="dc.documentos.currentDoc" body="true"></google-doc>
+<div role="tabpanel" class="tab-pane" id="documentlist">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Google Docs</h2>
+            <google-list></google-list>
         </div>
-    </div>
 
+        <div class="col-md-8" ng-controller="DisplayController as dc">
+            <h2>Document after zombification</h2>
+            <div class="well display">
+                <google-doc post="dc.documentos.currentDoc" body="true"></google-doc>
+            </div>
+        </div>
+
+    </div>
 </div>
