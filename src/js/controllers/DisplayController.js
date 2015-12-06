@@ -1,5 +1,7 @@
 app.controller('DisplayController', ['googleApis', function(googleApis){
   var lc = this;
-  lc.posts = googleApis;
+  lc.documentos = googleApis;
+
+ // googleApis.getList();
 
 }]);

@@ -1,4 +1,4 @@
-app.service('googleApis' , ['$q','$http', function($q,$http){
+app.service('googleApis' , ['$q','$http','$rootScope', function($q,$http,$rootScope){
     var gasrv = this;
 
     gasrv.docs=[];
@@ -48,6 +48,7 @@ app.service('googleApis' , ['$q','$http', function($q,$http){
                             if(mycallback) {
                                 mycallback(gasrv.docs);
                             }
+                            $rootScope.$apply;
                         },function(){
                             console.log("Failed getting the list");
                             //gasrv.activado = false;

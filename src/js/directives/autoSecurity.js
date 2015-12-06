@@ -7,7 +7,7 @@ app.directive('googleAuto' ,['googleApis' , '$rootScope' ,'$window', function(go
 
         ga.getAutorization = function(avoidPopup){
 
-            if (!ga.isReady){
+           // if (!ga.isReady){
 
                 var autoPromise = googleApis.authorization(avoidPopup)
 
@@ -16,7 +16,7 @@ app.directive('googleAuto' ,['googleApis' , '$rootScope' ,'$window', function(go
                         console.log("Success Login!");
                         ga.isReady = true;
                         googleApis.autoChecking = false;
-                        $rootScope.$apply();
+                        //$rootScope.$apply();
                     }, function (aresult) {
                         console.log("Something failed when trying to login " + aresult.error());
                         ga.isReady = false;
@@ -26,7 +26,9 @@ app.directive('googleAuto' ,['googleApis' , '$rootScope' ,'$window', function(go
                 else{
                     googleApis.autoChecking = false;
                 }
-            }
+          //  }
+
+            googleApis.getList();
         };
 
 
