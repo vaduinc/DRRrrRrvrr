@@ -12,12 +12,10 @@ app.directive('googleAuto' ,['googleApis'  ,'$window', '$location',function(goog
 
             if (autoPromise) {
                 autoPromise.then(function (aresult) {
-                    console.log("Success Login!");
                     ga.gAPI.getList();
                     ga.gAPI.isConnected = true;
-                    console.log($location.path());
-                    $location.path("/");
-                    console.log($location.path());
+                    $location.path("/"); // TODO dirty trick, since rendering list did not work.
+                    console.log("Success Login!");
                 }, function (aresult) {
                     console.log("Something failed when trying to login " + aresult.error());
                     ga.gAPI.isConnected = false;
