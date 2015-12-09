@@ -1,7 +1,7 @@
 app.directive('googleDoc', function(){
   return {
     scope: {
-      post: '=',
+      documento: '=',
       body: '='
     },
     templateUrl: '../../templates/google-doc.html'

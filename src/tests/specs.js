@@ -7,6 +7,36 @@ describe('FULL Tester', function(){
         var resolveApiLoad;
         var def;
 
+        var itemsMock = [
+                {
+                    "id": "1",
+                    "title": "Close-Juango-bofa"
+                },
+                {
+                    "id": "2",
+                    "title": "Copy of SurNorte Assay Management System"
+                },
+                {
+                    "id": "3",
+                    "title": "A-TODO-LIST"
+                },
+                {
+                    "id": "4",
+                    "title": "Jenkins-Build"
+                },
+                {
+                    "id": "5",
+                    "title": "Jenkins-Deployment"
+                },
+                {
+                    "id": "5",
+                    "title": "Research Paper"
+                }
+        ];
+
+
+
+
         beforeEach(module('DRRrrRrvrr'));
 
         //beforeEach(inject(function (_$controller_, _$rootScope_, _$q_) {
@@ -16,8 +46,6 @@ describe('FULL Tester', function(){
         //}));
 
         beforeEach(function () {
-
-
 
             module(function($provide){
 
@@ -41,16 +69,16 @@ describe('FULL Tester', function(){
                     googleApisMock.isConnected = true;
                 });
 
+                spyOn(googleApisMock, "getList").and.callFake(function(options, callback){
+                    googleApisMock.docs  = itemsMock;
+                });
+
             });
 
             inject(function ($injector) {
                 windowMock = $injector.get('$window');
             });
 
-        });
-
-        it('should return a promise',function(){
-            expect(true).toBeTruthy();
         });
 
         it('should be connected = false',function(){
@@ -60,6 +88,11 @@ describe('FULL Tester', function(){
         it('should be connected = true',function(){
             googleApisMock.authorization(false);
             expect(googleApisMock.isConnected).toBeTruthy();
+        });
+
+        it('should contain 6 items/documents',function(){
+            googleApisMock.getList();
+            expect(googleApisMock.docs.length).toBe(6);
         });
 
     });
