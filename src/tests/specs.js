@@ -2,10 +2,12 @@ describe('FULL Tester', function(){
 
     describe('define all pieces of the system', function(){
 
+        //var $httpBackend;
         var $q;
         var googleApisMock;
         var resolveApiLoad;
         var def;
+        var appConfig;
 
         var itemsMock = [
                 {
@@ -34,7 +36,8 @@ describe('FULL Tester', function(){
                 }
         ];
 
-
+        var originalDocMock = "this is the original document to be translated";
+        var currentDocMock = "thrrRrs rrRrs thrr rrrRrRRrrRrgrrRrnhral drrrRrcrrrrRrmrrnt trrrRr brr tRRhranslhratrrd";
 
 
         beforeEach(module('DRRrrRrvrr'));
@@ -63,7 +66,9 @@ describe('FULL Tester', function(){
             });
 
             inject(function($injector) {
+                appConfig = $injector.get('appConfig');
                 googleApisMock = $injector.get('googleApis');
+                //$httpBackend = $injector.get('$httpBackend');
 
                 spyOn(googleApisMock, "authorization").and.callFake(function(options, callback){
                     googleApisMock.isConnected = true;
@@ -73,10 +78,24 @@ describe('FULL Tester', function(){
                     googleApisMock.docs  = itemsMock;
                 });
 
+                spyOn(googleApisMock, "getDocument").and.callFake(function(options, callback){
+                    googleApisMock.currentDoc  = currentDocMock;
+                    googleApisMock.originalDoc = originalDocMock;
+                });
+
+                spyOn(googleApisMock, "translate2zombie").and.callFake(function(options, callback){
+                    googleApisMock.currentDoc  = currentDocMock;
+                });
+
+                //$httpBackend
+                //    .when('GET', 'http://ancient-anchorage-9224.herokuapp.com/zombify?q=')
+                //    .respond(200, originalDocMock + currentDocMock);
+
             });
 
             inject(function ($injector) {
                 windowMock = $injector.get('$window');
+
             });
 
         });
@@ -90,10 +109,37 @@ describe('FULL Tester', function(){
             expect(googleApisMock.isConnected).toBeTruthy();
         });
 
+        it('should NOT contain 6 items/documents',function(){
+            expect(googleApisMock.docs.length).not.toBe(6);
+        });
+
         it('should contain 6 items/documents',function(){
             googleApisMock.getList();
             expect(googleApisMock.docs.length).toBe(6);
         });
+
+        it('should NOT contain original and zombify documents',function(){
+            expect(googleApisMock.currentDoc).toBe("N/A");
+            expect(googleApisMock.originalDoc).toBe("N/A");
+        });
+
+        it('should fetch the original document and zombify it',function(){
+            googleApisMock.getDocument();
+
+            expect(googleApisMock.currentDoc).toBe(currentDocMock);
+            expect(googleApisMock.originalDoc).toBe(originalDocMock);
+        });
+
+        it('should be N/A the current doc before zombifying the document',function(){
+            expect(googleApisMock.currentDoc).toBe("N/A");
+        });
+
+        it('should bring the zombified document version',function(){
+            googleApisMock.translate2zombie("any text will return same response");
+
+            expect(googleApisMock.currentDoc).toBe(currentDocMock);
+        });
+
 
     });
 
