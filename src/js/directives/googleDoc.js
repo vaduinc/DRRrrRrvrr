@@ -4,6 +4,6 @@ app.directive('googleDoc', function(){
       documento: '=',
       body: '='
     },
-    templateUrl: '../../templates/google-doc.html'
+    templateUrl: 'templates/google-doc.html'
   };
 });

@@ -8,16 +8,17 @@ app.directive('googleList', ['googleApis', function(googleApis){
 
     dl.getLista = function(){
         googleApis.getList();
-    }
+    };
 
     dl.display = function(doc){
-      googleApis.getDocument(doc.id,googleApis.translate2zombie);
+        dump("display function called");
+      //googleApis.getDocument(doc.id,googleApis.translate2zombie);
     };
   };
 
   return {
     controller: this.ctrl,
     controllerAs: 'dl',
-    templateUrl: '../../templates/google-list.html'
+    templateUrl: 'templates/google-list.html'
   };
 }]);

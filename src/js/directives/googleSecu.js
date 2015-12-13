@@ -37,6 +37,6 @@ app.directive('googleAuto' ,['googleApis'  ,'$window', '$location',function(goog
     return {
         controller: this.ctrl,
         controllerAs: 'ga',
-        templateUrl: '../../templates/google-auto.html'
+        templateUrl: 'templates/google-auto.html'
     };
 }]);
