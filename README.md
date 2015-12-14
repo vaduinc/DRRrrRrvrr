@@ -3,7 +3,7 @@
 *Jaime Valencia*
 *valencia.jaime@yahoo.com*
 
-## IMPORTANT
+## IMPORTANT !!!
 In order to make the application work on your local machine you need to set first the
 CLIENT_ID in the appConfig.js file.
 
