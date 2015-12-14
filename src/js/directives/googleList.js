@@ -11,8 +11,7 @@ app.directive('googleList', ['googleApis', function(googleApis){
     };
 
     dl.display = function(doc){
-        dump("display function called");
-      //googleApis.getDocument(doc.id,googleApis.translate2zombie);
+        googleApis.getDocument(doc.id,googleApis.translate2zombie);
     };
   };
 
