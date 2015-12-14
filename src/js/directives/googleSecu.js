@@ -1,3 +1,11 @@
+/**
+ * Directive in charge of checking whether the end User has signed-in previously or not.
+ * It has the click event to sign in every time the user gets into the web app the
+ * first time.
+ * It also checks whether the Google API is already loaded.
+ *
+ */
+
 app.directive('googleAuto' ,['googleApis'  ,'$window', '$location',function(googleApis,$window,$location){
 
     this.ctrl = function(){
@@ -6,6 +14,14 @@ app.directive('googleAuto' ,['googleApis'  ,'$window', '$location',function(goog
         ga.gAPI = googleApis;
         ga.isReady=false;
 
+        /**
+         * Check whether the client is signed-in or not.
+         * If not then the application will popup a window asking the user
+         * for his/her Google credentials.
+         *
+         * @param avoidPopup true/false to pop up window to ask for user
+         *          credentials.
+         */
         ga.getAutorization = function(avoidPopup){
 
             var autoPromise = googleApis.authorization(avoidPopup);
@@ -25,10 +41,18 @@ app.directive('googleAuto' ,['googleApis'  ,'$window', '$location',function(goog
         };
 
 
+        /**
+         * Flag to check if the client Google API is already loaded
+         * @returns {*}
+         */
         ga.checkIfInitReady = function(){
             return $window.isInitReady;
         }
 
+        /**
+         * Calls the authorization functionality every time the end user click on
+         * the UI button
+         */
         ga.getPopup = function(){
             ga.getAutorization(false);
         };
